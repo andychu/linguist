@@ -6,16 +6,26 @@
 require 'linguist'
 require 'rugged'
 
-path = ARGV[0] || Dir.pwd
+puts "ARGV"
+puts ARGV
 
-# special case if not given a directory but still given the --breakdown option
-if path == "--breakdown"
-  path = Dir.pwd
-  breakdown = true
-end
+#path = ARGV[0] || Dir.pwd
+#
+## special case if not given a directory but still given the --breakdown option
+#if path == "--breakdown"
+#  path = Dir.pwd
+#  breakdown = true
+#end
+#
+#ARGV.shift
+#breakdown = true if ARGV[0] == "--breakdown"
+#
+#puts "HI THERE"
+#puts "hi", ARGV
+#puts ARGV[0]
+#puts ARGV[1]
 
-ARGV.shift
-breakdown = true if ARGV[0] == "--breakdown"
+path = 'not'
 
 if File.directory?(path)
   rugged = Rugged::Repository.new(path)
@@ -36,32 +46,36 @@ if File.directory?(path)
       puts
     end
   end
-elsif File.file?(path)
-  blob = Linguist::FileBlob.new(path, Dir.pwd)
-  type = if blob.text?
-    'Text'
-  elsif blob.image?
-    'Image'
-  else
-    'Binary'
-  end
-
-  puts "#{blob.name}: #{blob.loc} lines (#{blob.sloc} sloc)"
-  puts "  type:      #{type}"
-  puts "  mime type: #{blob.mime_type}"
-  puts "  language:  #{blob.language}"
-
-  if blob.large?
-    puts "  blob is too large to be shown"
-  end
-
-  if blob.generated?
-    puts "  appears to be generated source code"
-  end
-
-  if blob.vendored?
-    puts "  appears to be a vendored file"
-  end
 else
-  abort "usage: linguist <path>"
+  ARGV.each do |path|
+    if File.file?(path)
+      blob = Linguist::FileBlob.new(path, Dir.pwd)
+      type = if blob.text?
+        'Text'
+      elsif blob.image?
+        'Image'
+      else
+        'Binary'
+      end
+
+      puts "#{blob.name}: #{blob.loc} lines (#{blob.sloc} sloc)"
+      puts "  type:      #{type}"
+      puts "  mime type: #{blob.mime_type}"
+      puts "  language:  #{blob.language}"
+
+      if blob.large?
+        puts "  blob is too large to be shown"
+      end
+
+      if blob.generated?
+        puts "  appears to be generated source code"
+      end
+
+      if blob.vendored?
+        puts "  appears to be a vendored file"
+      end
+    else
+      abort "usage: linguist <path>"
+    end
+  end
 end
