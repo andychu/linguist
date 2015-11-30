@@ -75,7 +75,7 @@ else
         puts "  appears to be a vendored file"
       end
     else
-      abort "usage: linguist <path>"
+      abort "#{path} isn't a file"
     end
   end
 end
